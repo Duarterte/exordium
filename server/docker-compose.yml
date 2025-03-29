@@ -1,0 +1,10 @@
+version: '3'
+services:
+  server:
+    build: .
+    container_name: exordium
+    stdin_open: true
+    tty: true
+    ports:
+      - "49382:49382"
+    
