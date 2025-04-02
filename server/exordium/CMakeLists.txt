@@ -15,6 +15,9 @@ set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra")
 # Define source files
 set(SOURCE_FILES src/main.cpp)
 
+# Include directories
+include_directories(${CMAKE_SOURCE_DIR}/includes)
+
 # Define the executable
 add_executable(exordium ${SOURCE_FILES})
 

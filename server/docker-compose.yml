@@ -7,4 +7,16 @@ services:
     tty: true
     ports:
       - "49382:49382"
+    networks:
+      ex-net:
+        ipv4_address: 192.168.0.2
+
+networks:
+  ex-net:
+    ipam:
+      driver: default
+      config:
+        - subnet: 192.168.0.0/24
+    
+
     
