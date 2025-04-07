@@ -13,7 +13,7 @@ boost::asio::awaitable<void> server_handler(boost::asio::ip::udp::socket& socket
   char data[128];
   co_await socket.async_receive_from(boost::asio::buffer(data), endpoint,  boost::asio::use_awaitable);
   std::string server_data;
-
+  std::printf("Received: %s\n", data);
   int CMD = std::atoi(data);
   switch (static_cast<size_t>(CMD))
   {
@@ -50,7 +50,7 @@ boost::asio::awaitable<void> echo(boost::asio::ip::udp::socket socket)
 boost::asio::awaitable<void> listener()
 {
   auto executor = co_await boost::asio::this_coro::executor;
-  boost::asio::ip::udp::socket socket(executor, {boost::asio::ip::udp::v4(), 55555});
+  boost::asio::ip::udp::socket socket(executor, {boost::asio::ip::udp::v4(), 49382});
   co_await echo(std::move(socket)); // Pass the socket to the echo coroutine
 }
 

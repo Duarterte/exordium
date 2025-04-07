@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 135.467 67.733">
+  <defs>
+    <radialGradient xlink:href="#a" id="b" cx="0" cy="-29.284" r="67.693" fx="0" fy="-29.284" gradientTransform="matrix(.58346 .35149 -.17473 .29005 -5.117 15.697)" gradientUnits="userSpaceOnUse" spreadMethod="reflect"/>
+    <linearGradient id="a">
+      <stop offset="0" style="stop-color:#55551a;stop-opacity:1"/>
+      <stop offset=".5" style="stop-color:#ab8f0c;stop-opacity:1"/>
+      <stop offset="1" style="stop-color:#bdb300;stop-opacity:1"/>
+    </linearGradient>
+  </defs>
+  <path d="m14.514 11.53-4.528 4.525-4.529 4.525v29.471l4.62 4.619 4.616 4.621H120.887l4.47-4.596 4.461-4.582.088-14.668.088-14.67-4.476-4.619-4.485-4.627H67.77Z" style="opacity:1;fill:#000045;fill-opacity:1;stroke:none;stroke-width:.369403;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"/>
+  <path d="M6.22 58.518 0 52.258V18.324l6.235-6.233 6.234-6.233h110.529l6.189 6.234 6.188 6.234.006 16.993.006 16.994-6.235 6.232-6.235 6.233H12.442Zm118.72-4.406 4.339-4.387.006-14.376.006-14.376-4.286-4.417-4.286-4.418H14.871l-4.295 4.293-4.296 4.293v29.183l4.293 4.296 4.293 4.295h105.736z" style="fill:url(#b);fill-opacity:1;stroke:none;stroke-width:.369403;stroke-linecap:round;stroke-linejoin:round;paint-order:markers fill stroke"/>
+</svg>

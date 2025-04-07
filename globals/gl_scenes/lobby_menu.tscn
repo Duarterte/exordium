@@ -2,18 +2,20 @@
 
 [ext_resource type="Script" uid="uid://crffuauqr1etw" path="res://globals/gl_scenes/lobby_menu.gd" id="1_ut1o5"]
 
-[node name="LobbyMenu" type="Control"]
+[node name="LobbyMenu" type="Node"]
+script = ExtResource("1_ut1o5")
+
+[node name="Container" type="Control" parent="."]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-size_flags_horizontal = 6
-size_flags_vertical = 6
-script = ExtResource("1_ut1o5")
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="TextureRect" type="TextureRect" parent="."]
+[node name="TextureRect" type="TextureRect" parent="Container"]
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
@@ -21,3 +23,62 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
+
+[node name="SplitContainer" type="SplitContainer" parent="Container/TextureRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.965
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -0.320007
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="SerStatLB" type="Label" parent="Container/TextureRect/SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="Label2" type="Label" parent="Container/TextureRect/SplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="ErrWin" type="Popup" parent="."]
+title = "ERR"
+initial_position = 2
+size = Vector2i(500, 200)
+borderless = false
+
+[node name="ErrViewPort" type="SubViewportContainer" parent="ErrWin"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 6
+size_flags_vertical = 6
+
+[node name="SubViewport" type="SubViewport" parent="ErrWin/ErrViewPort"]
+handle_input_locally = false
+size = Vector2i(500, 200)
+render_target_update_mode = 0
+
+[node name="Control" type="Control" parent="ErrWin/ErrViewPort/SubViewport"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="ErrMsg" type="Label" parent="ErrWin/ErrViewPort/SubViewport/Control"]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+text = "NULL!"
+horizontal_alignment = 1
+vertical_alignment = 1

@@ -1,0 +1,102 @@
+@font-face {
+    font-family: "Mundare Bold";
+    src: url("/static/Mundare- Regular-Beta.otf") format("opentype");
+}
+
+@font-face {
+    font-family: "HandelGothic TL Regular";
+    src: url("/static/0768eur.ttf") format("truetype");
+}
+
+@font-face {
+    font-family: "EBGaramond Regular" format("truetype");
+    src: url('/static/EBGaramond-Regular.ttf');
+}
+
+
+body{
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+    font-family: "HandelGothic TL Regular";
+}
+
+
+#logo-text{
+    font-size: 39pt;
+    font-weight: lighter;
+    font-family: "Mundare Bold";
+    padding-top: 5%;
+    min-width: fit-content;
+    overflow: hidden;
+}
+
+nav {
+    border-image-slice: 17.3% 17.3% 17.3% 17.3%;
+    border-image-width: 47pt 47pt 47pt 47pt;
+    border-image-outset: 0 0 0 0;
+    border-image-repeat: round space;
+    border-image-source: url("/static/bord2_optim.svg");
+    min-height: 141pt;
+    min-width: fit-content;  
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+}
+
+section{
+    margin-top: 5vh;
+    
+}
+
+article{
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 0;
+}
+p{
+    text-align: center;
+    letter-spacing: .25pt;
+    font-family: "EBGaramond Regular";
+    font-size: 15.5pt;
+    text-align: justify;
+}
+
+@media screen and (min-width: 500pt) {
+    article{
+        padding: 0 5vw;
+    }
+    
+}
+
+@media screen and (min-width: 1000pt) {
+    article{
+        padding: 0 10vw;
+        
+    }
+    
+}
+
+@media screen and (min-width: 1300pt) {
+    article{
+        padding: 0 15vw;
+    }
+    
+}
+
+@media screen and (min-width: 1600pt) {
+    article{
+        padding: 0 20vw;
+    }
+    
+}
+
+@media screen and (min-width: 1800pt) {
+    article{
+        padding: 0 25vw;
+    }
+    
+}

@@ -15,6 +15,15 @@ run/main_scene="uid://c4luimmil1m8x"
 config/features=PackedStringArray("4.4", "Forward Plus")
 config/icon="res://icon.svg"
 
+[autoload]
+
+GLOBAL="*res://globals/gl_data/GLOBAL.gd"
+NET="*res://globals/gl_data/NET.gd"
+
+[display]
+
+window/subwindows/embed_subwindows=false
+
 [editor_plugins]
 
 enabled=PackedStringArray("res://addons/settings/plugin.cfg")
