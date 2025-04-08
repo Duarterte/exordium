@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The website for Exordium">
+    <title>Exordium</title>
+    <link rel="preload" href="/static/Mundare- Regular-Beta.otf" as="font" type="font/otf" crossorigin>
+    <link rel="preload" href="/static/0768eur.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/static/EBGaramond-Regular.ttf" as="font" type="font/ttf" crossorigin>
+    <link rel="preload" href="/static/styles.css" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    
+</head>
+<body>
+    <nav>
+        <header id="logo-header">
+            <h1 id="logo-text">EXORDIUM</h1>
+        </header> 
+        <ul id="nav-list">
+            <li>
+                <a style="text-decoration: underline;" href="/">Blog</a>
+            </li>
+            <li>
+                <a href="/docs">Docs</a>
+            </li>
+            <li>
+                <a href="/downloads">Downloads</a>
+            </li>
+            <li>
+                <a href="/register">Register</a>
+            </li>
+        </ul>
+    </nav>
+    <section>
+        <aside>
+            <form method="post" action="/register">
+                <table>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <label for="username">Username:</label>
+                            </td>
+                            <td>
+                                <input class="reg-inp" type="text" name="username" id="username" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="password">Password:</label>
+                            </td>
+                            <td>
+                                <input class="reg-inp" type="password" name="password" id="password" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="confirm-password">Re-Passwd: </label>
+                            </td>
+                            <td>
+                                <input class="reg-inp" type="password" name="confirm-password" id="confirm-password" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>
+                                <label for="email">Email:</label>
+                            </td>
+                            <td>
+                                <input class="reg-inp" type="email" name="email" id="email" required>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="2">
+                                <button type="submit">Register</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </form>
+        </aside>
+    </section>
+</body>
+</html>

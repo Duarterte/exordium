@@ -21,6 +21,9 @@ body{
     font-family: "HandelGothic TL Regular";
 }
 
+#logo-header{
+    
+}
 
 #logo-text{
     font-size: 39pt;
@@ -37,12 +40,38 @@ nav {
     border-image-outset: 0 0 0 0;
     border-image-repeat: round space;
     border-image-source: url("/static/bord2_optim.svg");
-    min-height: 141pt;
+    min-height: fit-content;
     min-width: fit-content;  
     display: flex;
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    flex-direction: column;
+    
+    padding: 47pt 0;
+}
+
+#nav-list{
+    display: flex;
+    flex-direction: column  ;
+    justify-content: flex-start;
+    align-items: flex-start;
+    padding-left: 3pt;
+    gap: 5pt;
+    border-left: solid 2pt;
+}
+#nav-list>li{
+    list-style-type: none;
+    font-size: 15pt;
+    text-align: left;
+}
+
+#nav-list>li>a{
+    text-decoration: none;
+    color: black;
+}
+#nav-list>li>a:hover{
+    color: #663300;
 }
 
 section{
@@ -50,7 +79,7 @@ section{
     
 }
 
-article{
+article, aside{
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -65,15 +94,46 @@ p{
     text-align: justify;
 }
 
+table{
+    border: dashed 2pt black;
+    border-collapse: separate;
+    border-spacing: 10pt;
+    text-align: center;  
+    margin-bottom: 30vh;
+} 
+
+.reg-inp {
+    border: none;
+    border-bottom: solid 2pt black;
+    background-color: transparent;
+    font-size: 15pt;
+    font-family: "HandelGothic TL Regular";
+    padding: 5pt;
+    
+}
+
+button{
+    background-image: url("/static/btn_background.svg");
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    font-size: 15pt;
+    font-family: "Mundare Bold";
+    padding: 25pt;
+    border: none;
+    cursor: pointer;
+    color: black;
+    
+}
+
 @media screen and (min-width: 500pt) {
-    article{
+    article, aside{
         padding: 0 5vw;
     }
     
 }
 
 @media screen and (min-width: 1000pt) {
-    article{
+    article, aside{
         padding: 0 10vw;
         
     }
@@ -81,22 +141,21 @@ p{
 }
 
 @media screen and (min-width: 1300pt) {
-    article{
+    article, aside{
         padding: 0 15vw;
     }
     
 }
 
 @media screen and (min-width: 1600pt) {
-    article{
+    article, aside{
         padding: 0 20vw;
     }
     
 }
 
 @media screen and (min-width: 1800pt) {
-    article{
+    article, aside{
         padding: 0 25vw;
     }
-    
 }

@@ -6,17 +6,22 @@ import (
 	"net/http"
 )
 
-func main() {
-	// Serve HTML files from the html folder
-	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/" {
-			http.ServeFile(w, r, "html/index.html")
-		} else {
-			http.ServeFile(w, r, "html"+r.URL.Path)
-		}
-	})
+func home(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/index.html")
+}
 
-	// Serve static files from the static folder
+func docs(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/docs.html")
+}
+
+func register(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/register.html")
+}
+
+func main() {
+	http.HandleFunc("/", home)
+	http.HandleFunc("/docs", docs)
+	http.HandleFunc("/register", register)
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 
 	fmt.Println("Server is listening on port 8080")
