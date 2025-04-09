@@ -11,12 +11,39 @@ services:
       ex-net:
         ipv4_address: 192.168.0.2
 
+
+  website:
+    build: ../website
+    container_name: exordium-website
+    stdin_open: true
+    tty: true
+    ports:
+      - "8080:8080"
+    networks:
+      ex-net:
+        ipv4_address: 192.168.0.3
+  
+  db:
+    build: ../database
+    container_name: exordium-db
+    stdin_open: true
+    tty: true
+    ports:
+      - "3306:3306"
+    networks:
+      ex-net:
+        ipv4_address: 192.168.0.5
+    volumes:
+      - ex-db-vol:/var/lib/mysql
+    restart: always
+
 networks:
   ex-net:
     ipam:
       driver: default
       config:
         - subnet: 192.168.0.0/24
-    
 
-    
+volumes:
+ ex-db-vol:
+    external: true

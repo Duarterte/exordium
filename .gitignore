@@ -3,4 +3,5 @@
 /android/
 /server/exordium/bin/*
 /addons/gut/
-
+/website/private_key.pem
+/website/public_key.pem
