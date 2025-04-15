@@ -4,12 +4,15 @@ extends Node
 @onready var errorWindow: Popup = $ErrWin
 @onready var errLabel: Label = $ErrWin/ErrViewPort/SubViewport/Control/ErrMsg
 @onready var conf: ConfigFile = ConfigFile.new()
+@onready var exo: ExoChaCha = ExoChaCha.new()
 
 func _ready() -> void:
 	cacheData()
 	connectToServer()
 	pingServer()
-	var exo: ExoChaCha = ExoChaCha.new()
+	initalizeUserSession()
+	
+	"""
 	var key := exo.generate_key()
 	var nonce := exo.generate_nonce()
 	var enc : PackedByteArray = exo.encrypt_data(key, nonce, "test msg");
@@ -23,6 +26,7 @@ func _ready() -> void:
 	else:
 		# Decryption failed (returned an empty PackedByteArray)
 		print("Decryption failed!")
+	"""
 	
 	
 func cacheData() -> void:
@@ -35,10 +39,16 @@ func cacheData() -> void:
 		var servName = conf.get_value("Server", "name")
 		var servAddress = conf.get_value("Server", "address")
 		var servPort = conf.get_value("Server", "port")
+		
+		var webHost = conf.get_value("Web", "host")
+		var webPort = conf.get_value("Web", "port")
 
 		GLOBAL.server.set("name", servName) 
 		GLOBAL.server.set("address", servAddress)
 		GLOBAL.server.set("port", servPort)
+		
+		GLOBAL.web_server.set("host", webHost)
+		GLOBAL.web_server.set("port", webPort)
 		#serverInfo.text = "Server Name: " + servName + "\nServer Address: " + servAddress + "\nServer Port: " + str(servPort)
 
 func connectToServer() -> void:
@@ -58,3 +68,25 @@ func pingServer() -> void:
 		await NET.command_response
 		if NET.lastCommand == "pong\n":
 			serverInfo.text = "ONLINE"
+
+func webServerResponse(result, response_code, headers, body):
+	print("--- Web Server Response ---")
+	print("Result:", result)
+	print("Response Code:", response_code)
+	print("Headers:", headers)
+	print("Body:", body.get_string_from_utf8())
+
+func initalizeUserSession () -> void:
+	var crypto: Crypto = Crypto.new()
+	var http_request: HTTPRequest = HTTPRequest.new()
+	add_child(http_request)
+	var HMAC_key: PackedByteArray = crypto.generate_random_bytes(32)
+	var CHACHA_key: PackedByteArray = exo.generate_key()
+	var CHACHA_nonce: PackedByteArray = exo.generate_nonce();
+	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
+	var headers = ["Content-Type: application/x-www-form-urlencoded"]
+	http_request.request_completed.connect(webServerResponse)
+	await http_request.request(url, headers, HTTPClient.METHOD_POST)
+	
+	
+	pass

@@ -22,6 +22,8 @@ services:
     networks:
       ex-net:
         ipv4_address: 192.168.0.3
+    depends_on:
+      - db
   
   db:
     build: ../database

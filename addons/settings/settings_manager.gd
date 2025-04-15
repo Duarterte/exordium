@@ -10,6 +10,10 @@ func createConfFile()-> void:
 		config.set_value("Server", "name", "Test")
 		config.set_value("Server", "address", "192.168.0.2")
 		config.set_value("Server", "port", 49382)
+		
+		config.set_value("Web", "host", "http://192.168.0.3")
+		config.set_value("Web", "port", 8080)
+		
 		config.save("res://addons/settings/CONF.cfg")
 		print("File Writed at settings/CONF.cfg")
 		

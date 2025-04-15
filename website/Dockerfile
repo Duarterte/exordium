@@ -6,9 +6,10 @@ WORKDIR /app
 # Copy the Go source code into the container
 COPY . /app
 COPY wserver.go .
-COPY go.mod go.sum .
-COPY private.key .
-COPY public.key .
+COPY go.mod .
+COPY go.sum .
+COPY private_key.pem .
+COPY public_key.pem .
 
 RUN go mod tidy
 

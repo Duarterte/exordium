@@ -173,6 +173,7 @@ func main() {
 	http.HandleFunc("/docs", docs)
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/downloads", downloads)
+	http.HandleFunc("/ping", pingWebServer)
 	http.Handle("/user", Protected(http.HandlerFunc(userPage)))
 	http.Handle("/success", Protected(http.HandlerFunc(success)))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -263,6 +264,21 @@ func register(w http.ResponseWriter, r *http.Request) {
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
+}
+
+func pingWebServer(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "GET" {
+		fmt.Fprintf(w, "pong from web server\n")
+		return
+	}
+	if r.Method == "POST" {
+		//decor Form data
+		test1 := r.FormValue("test1")
+		test2 := r.FormValue("test2")
+		fmt.Fprintf(w, "ping test1 value is : %s\nping test2 value is : %s\n", test1, test2)
+		return
+	}
+	fmt.Fprintf(w, "pong from web server\n")
 }
 
 func success(w http.ResponseWriter, r *http.Request) {
