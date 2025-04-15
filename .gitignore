@@ -5,3 +5,5 @@
 /addons/gut/
 /website/private_key.pem
 /website/public_key.pem
+/test_
+/extensions/godot-cpp

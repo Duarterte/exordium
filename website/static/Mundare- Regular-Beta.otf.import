@@ -1,0 +1,35 @@
+[remap]
+
+importer="font_data_dynamic"
+type="FontFile"
+uid="uid://bpxlh4sjrrwkj"
+path="res://.godot/imported/Mundare- Regular-Beta.otf-3de4b4bdcf30161246dbbf554b6f1497.fontdata"
+
+[deps]
+
+source_file="res://website/static/Mundare- Regular-Beta.otf"
+dest_files=["res://.godot/imported/Mundare- Regular-Beta.otf-3de4b4bdcf30161246dbbf554b6f1497.fontdata"]
+
+[params]
+
+Rendering=null
+antialiasing=1
+generate_mipmaps=false
+disable_embedded_bitmaps=true
+multichannel_signed_distance_field=false
+msdf_pixel_range=8
+msdf_size=48
+allow_system_fallback=true
+force_autohinter=false
+hinting=1
+subpixel_positioning=4
+keep_rounding_remainders=true
+oversampling=0.0
+Fallbacks=null
+fallbacks=[]
+Compress=null
+compress=true
+preload=[]
+language_support={}
+script_support={}
+opentype_features={}

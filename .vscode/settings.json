@@ -49,6 +49,24 @@
         "typeinfo": "cpp",
         "variant": "cpp",
         "format": "cpp",
-        "coroutine": "cpp"
-    }
+        "coroutine": "cpp",
+        "numbers": "cpp",
+        "any": "cpp",
+        "codecvt": "cpp",
+        "condition_variable": "cpp",
+        "csignal": "cpp",
+        "cstdarg": "cpp",
+        "cstring": "cpp",
+        "cwctype": "cpp",
+        "deque": "cpp",
+        "list": "cpp",
+        "source_location": "cpp",
+        "future": "cpp",
+        "mutex": "cpp",
+        "semaphore": "cpp",
+        "shared_mutex": "cpp",
+        "stop_token": "cpp",
+        "thread": "cpp"
+    },
+    "godotTools.editorPath.godot4": "/home/essi/Godot_v4.4.1-stable_linux.x86_64"
 }

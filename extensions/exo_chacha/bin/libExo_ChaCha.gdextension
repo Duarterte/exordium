@@ -1,0 +1,7 @@
+[configuration]
+entry_symbol = "exo_chacha_init"
+compatibility_minimum = 4.4
+
+[libraries]
+
+linux.debug.x86_64 = "res://extensions/exo_chacha/bin/libExo_ChaCha.linux.template_debug.x86_64.so"

@@ -9,6 +9,20 @@ func _ready() -> void:
 	cacheData()
 	connectToServer()
 	pingServer()
+	var exo: ExoChaCha = ExoChaCha.new()
+	var key := exo.generate_key()
+	var nonce := exo.generate_nonce()
+	var enc : PackedByteArray = exo.encrypt_data(key, nonce, "test msg");
+	var dec : PackedByteArray = exo.decrypt_data(key, nonce, enc)
+
+	if dec.size() > 0:
+		# Decryption was successful
+		var decrypted_string : String = dec.get_string_from_utf8()
+		print("Encrypted:", enc.hex_encode())
+		print("Decrypted:", decrypted_string)
+	else:
+		# Decryption failed (returned an empty PackedByteArray)
+		print("Decryption failed!")
 	
 	
 func cacheData() -> void:

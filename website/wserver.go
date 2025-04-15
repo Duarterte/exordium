@@ -161,7 +161,7 @@ func getUserUUID(username string) uuid.UUID {
 	defer db.Close()
 
 	var userUUID uuid.UUID
-	err = db.QueryRow("SELECT uuid FROM users WHERE username = ?", username).Scan(&userUUID)
+	err = db.QueryRow("SELECT id FROM users WHERE username = ?", username).Scan(&userUUID)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -172,7 +172,9 @@ func main() {
 	http.HandleFunc("/", home)
 	http.HandleFunc("/docs", docs)
 	http.HandleFunc("/register", register)
+	http.HandleFunc("/downloads", downloads)
 	http.Handle("/user", Protected(http.HandlerFunc(userPage)))
+	http.Handle("/success", Protected(http.HandlerFunc(success)))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	fmt.Println("Server is listening on port 8080")
 	checkConn()
@@ -224,6 +226,10 @@ func docs(w http.ResponseWriter, r *http.Request) {
 	http.ServeFile(w, r, "html/docs.html")
 }
 
+func downloads(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/downloads.html")
+}
+
 func register(w http.ResponseWriter, r *http.Request) {
 	if r.Method == "GET" {
 		http.ServeFile(w, r, "html/register.html")
@@ -250,11 +256,15 @@ func register(w http.ResponseWriter, r *http.Request) {
 				Secure:   true,
 			}
 			http.SetCookie(w, cookie)
-			http.Redirect(w, r, "/", http.StatusSeeOther)
+			http.Redirect(w, r, "/success", http.StatusSeeOther)
 			fmt.Println("User created successfully")
 		} else {
 			fmt.Println("User creation failed")
 			http.Redirect(w, r, "/", http.StatusSeeOther)
 		}
 	}
+}
+
+func success(w http.ResponseWriter, r *http.Request) {
+	http.ServeFile(w, r, "html/success.html")
 }
