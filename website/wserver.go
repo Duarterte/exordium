@@ -153,6 +153,21 @@ func createUser(username, password, email string) <-chan bool {
 	return ch
 }
 
+func getUser(username string, password string) User {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	var user User
+	err = db.QueryRow("SELECT id, username, email, password FROM users WHERE (username = ? OR email = ?) AND password = ?", username, username, password).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
+	if err != nil {
+		log.Fatal(err)
+	}
+	return user
+}
+
 func getUserUUID(username string) uuid.UUID {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -174,6 +189,7 @@ func main() {
 	http.HandleFunc("/register", register)
 	http.HandleFunc("/downloads", downloads)
 	http.HandleFunc("/ping", pingWebServer)
+	http.HandleFunc("/login-game", loginFromGame)
 	http.Handle("/user", Protected(http.HandlerFunc(userPage)))
 	http.Handle("/success", Protected(http.HandlerFunc(success)))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
@@ -279,6 +295,37 @@ func pingWebServer(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	fmt.Fprintf(w, "pong from web server\n")
+}
+
+func loginFromGame(w http.ResponseWriter, r *http.Request) {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer db.Close()
+
+	var user_form_value = r.FormValue("user")
+	var password_form_value = r.FormValue("password")
+
+	//get userfrom getUser(user_form_value, password_form_value)
+	var user = getUser(user_form_value, password_form_value)
+
+	if user.ID != uuid.Nil {
+		token := generateToken(user.ID)
+		signedToken := getTokenString(token)
+		cookie := &http.Cookie{
+			Name:     "Authorization",
+			Value:    signedToken,
+			Path:     "/",
+			Expires:  time.Now().Add(time.Hour),
+			HttpOnly: true,
+			Secure:   true,
+		}
+		http.SetCookie(w, cookie)
+		fmt.Fprintf(w, "Logged Successfully\n")
+		return
+	}
+	fmt.Fprintf(w, "Error logging in from game server\n")
 }
 
 func success(w http.ResponseWriter, r *http.Request) {

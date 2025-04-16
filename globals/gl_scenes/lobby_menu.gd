@@ -1,4 +1,9 @@
 extends Node
+
+signal webserv_status(loggin: bool)
+
+
+
 @onready var tex: TextureRect = $Container/TextureRect
 @onready var serverInfo: Label = $Container/TextureRect/SplitContainer/SerStatLB
 @onready var errorWindow: Popup = $ErrWin
@@ -7,6 +12,7 @@ extends Node
 @onready var exo: ExoChaCha = ExoChaCha.new()
 
 func _ready() -> void:
+	webserv_status.connect(func(logged_status): return logged_status)
 	cacheData()
 	connectToServer()
 	pingServer()
@@ -69,12 +75,20 @@ func pingServer() -> void:
 		if NET.lastCommand == "pong\n":
 			serverInfo.text = "ONLINE"
 
-func webServerResponse(result, response_code, headers, body):
-	print("--- Web Server Response ---")
-	print("Result:", result)
-	print("Response Code:", response_code)
-	print("Headers:", headers)
-	print("Body:", body.get_string_from_utf8())
+func webServerResponse(result, response_code, headers, body) -> bool:
+	#print("--- Web Server Response ---")
+	#print("Result:", result)
+	#print("Response Code:", response_code)
+	#print("Headers:", headers)
+	#print("Body:", body.get_string_from_utf8())
+	print(body.get_string_from_utf8() == "Logged Successfully\n")
+	if body.get_string_from_utf8() == "Logged Successfully\n":
+		webserv_status.emit(true)
+		return true
+	webserv_status.emit(false)
+	return false
+
+
 
 func initalizeUserSession () -> void:
 	var crypto: Crypto = Crypto.new()
@@ -83,10 +97,9 @@ func initalizeUserSession () -> void:
 	var HMAC_key: PackedByteArray = crypto.generate_random_bytes(32)
 	var CHACHA_key: PackedByteArray = exo.generate_key()
 	var CHACHA_nonce: PackedByteArray = exo.generate_nonce();
-	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
+	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/login-game?user=admin&password=admin"
+	#var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
 	var headers = ["Content-Type: application/x-www-form-urlencoded"]
 	http_request.request_completed.connect(webServerResponse)
-	await http_request.request(url, headers, HTTPClient.METHOD_POST)
-	
-	
-	pass
+	var r:bool = await http_request.request(url, headers, HTTPClient.METHOD_POST)
+	var is_logged = await webserv_status
