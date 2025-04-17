@@ -6,6 +6,8 @@
 #include <array>
 #include <functional>
 #include <string>
+#include <boost/asio/awaitable.hpp>
+
 
 namespace exordium {
   enum class Key
@@ -15,19 +17,19 @@ namespace exordium {
       SIZE,
       COUNT // Add a COUNT to represent the number of commands
     };
-  
+
   constexpr std::size_t to_index(Key key) {
     return static_cast<std::size_t>(key);
   }
 
-  static std::array<std::function<std::string(void)>, KEYS(COUNT)> command;
+  static std::array<std::function<boost::asio::awaitable<std::string>()>, KEYS(COUNT)> command;
 
-  static inline std::string ping(){
-    return "pong\n";
+  static boost::asio::awaitable<std::string> ping() {
+    co_return "pong\n";
   }
 
-  static inline std::string size_func(){
-    return "some size info\n"; // Replace with actual size logic
+  static boost::asio::awaitable<std::string> size_func() {
+    co_return "some size info\n"; // Replace with actual size logic
   }
 
 
@@ -42,7 +44,7 @@ namespace exordium {
   // Create a static instance of the initializer to ensure it runs once
   static CommandInitializer initializer;
 
- 
+
 }
 
 #endif

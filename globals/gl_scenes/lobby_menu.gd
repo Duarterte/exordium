@@ -8,15 +8,15 @@ signal webserv_status(loggin: bool)
 @onready var serverInfo: Label = $Container/TextureRect/SplitContainer/SerStatLB
 @onready var errorWindow: Popup = $ErrWin
 @onready var errLabel: Label = $ErrWin/ErrViewPort/SubViewport/Control/ErrMsg
+@onready var l_user: LineEdit = $Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer/LineEditUsr
+@onready var l_password: LineEdit = $Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer2/LineEditPaswd
 @onready var conf: ConfigFile = ConfigFile.new()
 @onready var exo: ExoChaCha = ExoChaCha.new()
-
 func _ready() -> void:
 	webserv_status.connect(func(logged_status): return logged_status)
 	cacheData()
 	connectToServer()
 	pingServer()
-	initalizeUserSession()
 	
 	"""
 	var key := exo.generate_key()
@@ -81,25 +81,30 @@ func webServerResponse(result, response_code, headers, body) -> bool:
 	#print("Response Code:", response_code)
 	#print("Headers:", headers)
 	#print("Body:", body.get_string_from_utf8())
-	print(body.get_string_from_utf8() == "Logged Successfully\n")
 	if body.get_string_from_utf8() == "Logged Successfully\n":
 		webserv_status.emit(true)
 		return true
 	webserv_status.emit(false)
 	return false
+	
 
-
-
-func initalizeUserSession () -> void:
+func initalizeUserSession (user: String , password: String) -> void:
 	var crypto: Crypto = Crypto.new()
 	var http_request: HTTPRequest = HTTPRequest.new()
 	add_child(http_request)
 	var HMAC_key: PackedByteArray = crypto.generate_random_bytes(32)
 	var CHACHA_key: PackedByteArray = exo.generate_key()
 	var CHACHA_nonce: PackedByteArray = exo.generate_nonce();
-	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/login-game?user=admin&password=admin"
+	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/login-game?user="+user+"&password="+password
 	#var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
 	var headers = ["Content-Type: application/x-www-form-urlencoded"]
 	http_request.request_completed.connect(webServerResponse)
 	var r:bool = await http_request.request(url, headers, HTTPClient.METHOD_POST)
 	var is_logged = await webserv_status
+	print(is_logged)
+
+
+
+
+func _on_button_pressed() -> void:
+	initalizeUserSession(l_user.text, l_password.text)

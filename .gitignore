@@ -7,3 +7,5 @@
 /website/public_key.pem
 /test_
 /extensions/godot-cpp
+.vscode*
+.vscode/*

@@ -156,14 +156,16 @@ func createUser(username, password, email string) <-chan bool {
 func getUser(username string, password string) User {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return User{}
 	}
 	defer db.Close()
 
 	var user User
 	err = db.QueryRow("SELECT id, username, email, password FROM users WHERE (username = ? OR email = ?) AND password = ?", username, username, password).Scan(&user.ID, &user.Username, &user.Email, &user.Password)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
+		return User{}
 	}
 	return user
 }

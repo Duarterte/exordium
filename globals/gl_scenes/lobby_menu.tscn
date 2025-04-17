@@ -24,22 +24,148 @@ grow_horizontal = 2
 grow_vertical = 2
 expand_mode = 1
 
-[node name="SplitContainer" type="SplitContainer" parent="Container/TextureRect"]
+[node name="Panel" type="Panel" parent="Container/TextureRect"]
 layout_mode = 1
 anchors_preset = -1
-anchor_top = 0.965
+anchor_right = 1.0
+anchor_bottom = 0.071
+offset_bottom = -0.00800323
+grow_horizontal = 2
+
+[node name="Label" type="Label" parent="Container/TextureRect/Panel"]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -42.5
+offset_top = -11.5
+offset_right = 42.5
+offset_bottom = 11.5
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_font_sizes/font_size = 32
+text = "EXORDIUM"
+
+[node name="MarginContainer" type="MarginContainer" parent="Container/TextureRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.289
+anchor_top = 0.122
+anchor_right = 0.711
+anchor_bottom = 0.914
+offset_left = -332.928
+offset_top = -33.056
+offset_right = 332.928
+offset_bottom = 32.728
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/margin_left = 333
+theme_override_constants/margin_top = 33
+theme_override_constants/margin_right = 333
+theme_override_constants/margin_bottom = 33
+
+[node name="Panel" type="Panel" parent="Container/TextureRect/MarginContainer"]
+layout_mode = 2
+
+[node name="SplitContainer" type="Control" parent="Container/TextureRect/MarginContainer/Panel"]
+layout_mode = 1
+anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -0.320007
 grow_horizontal = 2
-grow_vertical = 0
+grow_vertical = 2
+
+[node name="Label" type="Label" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer"]
+layout_mode = 2
+anchor_left = 0.457
+anchor_right = 0.543
+anchor_bottom = 0.045
+offset_left = -0.102005
+offset_right = 0.10199
+offset_bottom = -0.085001
+size_flags_horizontal = 4
+text = "Login"
+horizontal_alignment = 1
+vertical_alignment = 1
+
+[node name="HSplitContainer" type="HSplitContainer" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer"]
+layout_mode = 2
+anchor_top = 0.068
+anchor_right = 1.0
+anchor_bottom = 0.158
+offset_top = 0.115997
+offset_bottom = -0.0540009
+
+[node name="Label" type="Label" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "User:          "
+
+[node name="LineEditUsr" type="LineEdit" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="HSplitContainer2" type="HSplitContainer" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 0.158
+anchor_right = 1.0
+anchor_bottom = 0.253
+offset_top = -0.0540009
+offset_bottom = 0.210983
+
+[node name="Label" type="Label" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer2"]
+layout_mode = 2
+size_flags_horizontal = 4
+size_flags_vertical = 0
+text = "Password: 
+          "
+
+[node name="LineEditPaswd" type="LineEdit" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer2"]
+layout_mode = 2
+size_flags_vertical = 0
+
+[node name="LoginBTN" type="Button" parent="Container/TextureRect/MarginContainer/Panel/SplitContainer"]
+layout_mode = 1
+anchors_preset = -1
+anchor_left = 0.449
+anchor_top = 0.253
+anchor_right = 0.56
+anchor_bottom = 0.314
+offset_left = 3.78598
+offset_top = 0.210983
+offset_right = -0.160004
+offset_bottom = -0.0820007
+grow_horizontal = 2
+grow_vertical = 2
+text = "Login"
+
+[node name="SplitContainer" type="Panel" parent="Container/TextureRect"]
+layout_mode = 1
+anchors_preset = -1
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -23.0
+grow_horizontal = 2
+grow_vertical = 2
 
 [node name="SerStatLB" type="Label" parent="Container/TextureRect/SplitContainer"]
 layout_mode = 2
+offset_right = 570.0
+offset_bottom = 23.0
 size_flags_horizontal = 3
 
 [node name="Label2" type="Label" parent="Container/TextureRect/SplitContainer"]
 layout_mode = 2
+anchor_left = 0.505
+anchor_right = 0.505
+anchor_bottom = 1.0
+offset_left = 0.23999
+offset_right = 570.24
 size_flags_horizontal = 3
 
 [node name="ErrWin" type="Popup" parent="."]
@@ -82,3 +208,5 @@ grow_vertical = 2
 text = "NULL!"
 horizontal_alignment = 1
 vertical_alignment = 1
+
+[connection signal="pressed" from="Container/TextureRect/MarginContainer/Panel/SplitContainer/LoginBTN" to="." method="_on_button_pressed"]

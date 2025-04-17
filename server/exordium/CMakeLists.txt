@@ -13,7 +13,8 @@ set(CMAKE_CXX_FLAGS "-std=c++23 -Wall -Wextra")
 # set(CMAKE_EXE_LINKER_FLAGS "")
 
 # Define source files
-set(SOURCE_FILES src/main.cpp)
+file(GLOB SOURCE_FILES src/*.cpp)
+
 
 # Include directories
 include_directories(${CMAKE_SOURCE_DIR}/includes)
