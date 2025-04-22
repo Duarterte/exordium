@@ -22,6 +22,9 @@ include_directories(${CMAKE_SOURCE_DIR}/includes)
 # Define the executable
 add_executable(exordium ${SOURCE_FILES})
 
+# Link against sodium
+target_link_libraries(exordium sodium ssl crypto)
+
 # Set the output directory for the executable to the 'bin' folder at the project root
 set_target_properties(exordium PROPERTIES
     RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/bin"

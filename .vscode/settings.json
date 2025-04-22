@@ -67,7 +67,9 @@
         "shared_mutex": "cpp",
         "stop_token": "cpp",
         "thread": "cpp",
-        "*.ipp": "cpp"
+        "*.ipp": "cpp",
+        "ranges": "cpp",
+        "regex": "cpp"
     },
     "godotTools.editorPath.godot4": "/home/essi/Godot_v4.4.1-stable_linux.x86_64"
 }

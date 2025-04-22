@@ -3,18 +3,25 @@
 #define EXORDIUM_H
 #define KEYS(member) to_index(exordium::Key::member)
 
+
 #include <array>
 #include <functional>
 #include <string>
 #include <boost/asio/awaitable.hpp>
+#include "store.hpp"
+
 
 
 namespace exordium {
+
+  std::unique_ptr<Store> db_store;
+
   enum class Key
     {
       NONE,
       PING,
       SIZE,
+      CHECK_CONNECTION,
       COUNT // Add a COUNT to represent the number of commands
     };
 
@@ -32,19 +39,23 @@ namespace exordium {
     co_return "some size info\n"; // Replace with actual size logic
   }
 
+  static boost::asio::awaitable<std::string> check_connection() {
+    std:: string response = co_await db_store->test_query();
+    co_return response;
+  }
+
+
 
   // Initialize the commands array after the functions are defined
   struct CommandInitializer {
     CommandInitializer() {
       command[KEYS(PING)] = ping;
       command[KEYS(SIZE)] = size_func;
+      command[KEYS(CHECK_CONNECTION)] = check_connection;
     }
   };
 
-  // Create a static instance of the initializer to ensure it runs once
   static CommandInitializer initializer;
-
-
 }
 
 #endif
