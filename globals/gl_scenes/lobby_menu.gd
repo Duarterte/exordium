@@ -102,7 +102,6 @@ func webServerResponse(result, response_code, headers: PackedStringArray, body) 
 		return true
 	webserv_status.emit(false)
 	return false
-	
 
 func initalizeUserSession (user: String , password: String) -> void:
 	var crypto: Crypto = Crypto.new()
@@ -114,6 +113,7 @@ func initalizeUserSession (user: String , password: String) -> void:
 	GLOBAL.auth.HMAC_key = HMAC_key;
 	GLOBAL.auth.CHACHA_token = CHACHA_key
 	GLOBAL.auth.CHACHA_nonce = CHACHA_nonce
+	GLOBAL.player.user = user
 	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/login-game?user="+user+"&password="+password
 	#var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
 	var headers = ["Content-Type: application/x-www-form-urlencoded"]
@@ -124,8 +124,23 @@ func initalizeUserSession (user: String , password: String) -> void:
 	http_request.queue_free()
 	
 	
+	
 func _on_button_pressed() -> void:
 	initalizeUserSession(l_user.text, l_password.text)
+	
+	
+func store_secrets(user_or_email: String, hmac_key: PackedByteArray,chacha_key: PackedByteArray, chacha_nonce: PackedByteArray) -> void:
+	var http_request: HTTPRequest = HTTPRequest.new()
+	add_child(http_request)
+	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/secretes?user=%s&hmac-key=%s&chacha-key=%s&chacha-nonce=%s" % [user_or_email, hmac_key.hex_encode(), chacha_key.hex_encode(), chacha_nonce.hex_encode()]
+	var rgx = RegEx.new()
+	rgx.compile("Authorization=.+?;")
+	var results := rgx.search(GLOBAL.auth.JWT_cookie)
+	var headers: PackedStringArray = ["Cookie: "+results.get_string(), "Content-Type: application/x-www-form-urlencoded"]
+	http_request.request_completed.connect(func(result, response_code, headers, body: PackedByteArray): print(body.get_string_from_utf8()))
+	http_request.request(url, headers, HTTPClient.METHOD_POST)
+	await http_request.request_completed
+		
 
 func _process(delta: float) -> void:
 	if(!conn_check &&!GLOBAL.auth.JWT_cookie.is_empty()):
@@ -136,3 +151,8 @@ func _process(delta: float) -> void:
 		if(log_msg[0] == "XLoggin success!X"):
 			serverInfo.add_theme_color_override("font_color", Color(0, 1.0, 0, 1.0))
 			online_color = true
+			var user_or_email: String = GLOBAL.player.user
+			var hmac_key :PackedByteArray = GLOBAL.auth.HMAC_key
+			var chacha_key: PackedByteArray = GLOBAL.auth.CHACHA_token 
+			var chacha_nonce: PackedByteArray = GLOBAL.auth.CHACHA_nonce
+			store_secrets(user_or_email, hmac_key, chacha_key, chacha_nonce)

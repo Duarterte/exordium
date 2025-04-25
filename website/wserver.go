@@ -153,6 +153,41 @@ func createUser(username, password, email string) <-chan bool {
 	return ch
 }
 
+func store_secrets(usernameOrEmail string, hexStringHMAC string, hexStringCHAHA string, hexStringNonce string) bool {
+	db, err := sql.Open("mysql", dsn)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	defer db.Close()
+
+	// Use a parameterized query
+	query := `
+        UPDATE users 
+        SET hmac_key = UNHEX(?), chacha_key = UNHEX(?), chacha_nonce = UNHEX(?) 
+        WHERE username = ? OR email = ?;
+    `
+	result, err := db.Exec(query, hexStringHMAC, hexStringCHAHA, hexStringNonce, usernameOrEmail, usernameOrEmail)
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+
+	// Check if any rows were updated
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		log.Fatal(err)
+		return false
+	}
+	if rowsAffected == 0 {
+		fmt.Println("No rows updated. Check if the username or email exists.")
+		return false
+	}
+
+	fmt.Println("Secrets stored successfully")
+	return true
+}
+
 func getUser(username string, password string) User {
 	db, err := sql.Open("mysql", dsn)
 	if err != nil {
@@ -194,6 +229,7 @@ func main() {
 	http.HandleFunc("/login-game", loginFromGame)
 	http.Handle("/user", Protected(http.HandlerFunc(userPage)))
 	http.Handle("/success", Protected(http.HandlerFunc(success)))
+	http.Handle("/secretes", Protected(http.HandlerFunc(secretes)))
 	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("static"))))
 	fmt.Println("Server is listening on port 8080")
 	checkConn()
@@ -280,6 +316,22 @@ func register(w http.ResponseWriter, r *http.Request) {
 		} else {
 			fmt.Println("User creation failed")
 			http.Redirect(w, r, "/", http.StatusSeeOther)
+		}
+	}
+}
+
+func secretes(w http.ResponseWriter, r *http.Request) {
+	if r.Method == "POST" {
+		//get form data
+		usernameOrEmail := r.FormValue("user")
+		hmac_key := r.FormValue("hmac-key")
+		chacha_key := r.FormValue("chacha-key")
+		chacha_nonce := r.FormValue("chacha-nonce")
+		secretes_stored := store_secrets(usernameOrEmail, hmac_key, chacha_key, chacha_nonce)
+		if secretes_stored {
+			fmt.Fprintf(w, "Secrets stored successfully\n")
+		} else {
+			fmt.Fprintf(w, "Error storing secrets\n")
 		}
 	}
 }

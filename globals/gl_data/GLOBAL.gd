@@ -17,3 +17,7 @@ var auth: Dictionary = {
 	"CHACHA_token": PackedByteArray(),
 	"CHAHA_nonce": PackedByteArray()
 }
+
+var player: Dictionary = {
+	"user": "" #can be username or email
+}
