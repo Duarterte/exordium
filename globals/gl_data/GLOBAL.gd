@@ -10,3 +10,10 @@ var web_server: Dictionary = {
 	"host": "",
 	"port": 0
 }
+
+var auth: Dictionary = {
+	"JWT_cookie" : "",
+	"HMAC_toke": PackedByteArray(),	
+	"CHACHA_token": PackedByteArray(),
+	"CHAHA_nonce": PackedByteArray()
+}

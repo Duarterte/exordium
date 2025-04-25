@@ -1,9 +1,11 @@
 extends Node
 
 signal webserv_status(loggin: bool)
+signal status_conn
+signal get_log_msg
 
-
-
+@onready var t1: Thread = Thread.new()
+@onready var s1: Semaphore = Semaphore.new()
 @onready var tex: TextureRect = $Container/TextureRect
 @onready var serverInfo: Label = $Container/TextureRect/SplitContainer/SerStatLB
 @onready var errorWindow: Popup = $ErrWin
@@ -12,11 +14,25 @@ signal webserv_status(loggin: bool)
 @onready var l_password: LineEdit = $Container/TextureRect/MarginContainer/Panel/SplitContainer/HSplitContainer2/LineEditPaswd
 @onready var conf: ConfigFile = ConfigFile.new()
 @onready var exo: ExoChaCha = ExoChaCha.new()
+
+@onready var conn_check: bool = false
+@onready var log_msg: Array[String] = [""]
+@onready var online_color: bool = false
+
 func _ready() -> void:
 	webserv_status.connect(func(logged_status): return logged_status)
+	status_conn.connect(NET.check_connection)
 	cacheData()
 	connectToServer()
 	pingServer()
+	t1.start(func()->String:
+		s1.wait()
+		status_conn.emit.call_deferred(log_msg)
+		return "thread finish"
+		)
+	await status_conn
+	
+	
 	
 	"""
 	var key := exo.generate_key()
@@ -67,6 +83,7 @@ func connectToServer() -> void:
 func pingServer() -> void:
 	await NET.sendCommands([NET.PING], true)
 	if(!NET.lastCommand.is_empty()):
+		
 		if NET.lastCommand == "pong\n":
 			serverInfo.text = "ONLINE"
 		
@@ -75,14 +92,13 @@ func pingServer() -> void:
 		if NET.lastCommand == "pong\n":
 			serverInfo.text = "ONLINE"
 
-func webServerResponse(result, response_code, headers, body) -> bool:
-	#print("--- Web Server Response ---")
-	#print("Result:", result)
-	#print("Response Code:", response_code)
-	#print("Headers:", headers)
-	#print("Body:", body.get_string_from_utf8())
+func webServerResponse(result, response_code, headers: PackedStringArray, body) -> bool:
+	if(result && response_code && body):
+		print(body)
 	if body.get_string_from_utf8() == "Logged Successfully\n":
-		webserv_status.emit(true)
+		webserv_status.emit(true)# get only the JWT token
+		var header_str: String = headers[0]
+		GLOBAL.auth.JWT_cookie = header_str;
 		return true
 	webserv_status.emit(false)
 	return false
@@ -95,16 +111,28 @@ func initalizeUserSession (user: String , password: String) -> void:
 	var HMAC_key: PackedByteArray = crypto.generate_random_bytes(32)
 	var CHACHA_key: PackedByteArray = exo.generate_key()
 	var CHACHA_nonce: PackedByteArray = exo.generate_nonce();
+	GLOBAL.auth.HMAC_key = HMAC_key;
+	GLOBAL.auth.CHACHA_token = CHACHA_key
+	GLOBAL.auth.CHACHA_nonce = CHACHA_nonce
 	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/login-game?user="+user+"&password="+password
 	#var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/ping?test1=godot&test2=4%2E4"
 	var headers = ["Content-Type: application/x-www-form-urlencoded"]
 	http_request.request_completed.connect(webServerResponse)
-	var r:bool = await http_request.request(url, headers, HTTPClient.METHOD_POST)
+	http_request.request(url, headers, HTTPClient.METHOD_POST)
 	var is_logged = await webserv_status
-	print(is_logged)
-
-
-
-
+	remove_child(http_request)
+	http_request.queue_free()
+	
+	
 func _on_button_pressed() -> void:
 	initalizeUserSession(l_user.text, l_password.text)
+
+func _process(delta: float) -> void:
+	if(!conn_check &&!GLOBAL.auth.JWT_cookie.is_empty()):
+		s1.post()
+		conn_check = true
+		print(t1.wait_to_finish())
+	if(!online_color):
+		if(log_msg[0] == "XLoggin success!X"):
+			serverInfo.add_theme_color_override("font_color", Color(0, 1.0, 0, 1.0))
+			online_color = true
