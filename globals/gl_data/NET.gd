@@ -1,5 +1,4 @@
 extends Node
-
 signal command_response
 signal token_validated(status: String)
 
@@ -10,7 +9,7 @@ enum {
 }
 
 @onready var udp := PacketPeerUDP.new()
-@onready var lastCommand = ""
+@onready var lastCommand: PackedByteArray
 
 func _ready() -> void:
 	token_validated.connect(get_log_status)
@@ -25,16 +24,17 @@ func connectToServer() -> Error:
 		return error
 	return error
 
+func sendCustomCommand(cmd: PackedByteArray) -> void:
+	udp.put_packet(cmd)
+	get_udp_resp()
+	await  command_response
+	print(lastCommand.get_string_from_ascii())
+	
+
 func sendCommands(commands: Array[int], awaitResponse: bool = true):
-	"""
-	var data = "1".to_utf8_buffer()
-	var sent = udp.put_packet(data)
-	if sent != OK:
-		printerr("Error sending data:", sent)
-	"""
 	for command in commands:
 		var data := str(command).to_utf8_buffer()
-		data.append(0x0A) #appending \n (new line) to the end of the stirng
+		data.append(0x0A) #appending \n (new line) to the end of the string
 		var sent := udp.put_packet(data)
 		if sent != OK:
 			printerr("Error sending data:", sent)
@@ -48,14 +48,14 @@ func get_udp_resp():
 	var max_attempts = 10
 	var retry_delay = 0.1
 	while  attempts < max_attempts:
-		var udp_pack_str = udp.get_packet().get_string_from_utf8()
+		var udp_pack_str = udp.get_packet()
 		if !udp_pack_str.is_empty():
 			lastCommand = udp_pack_str
 			command_response.emit()
 			return
 		attempts += 1
 		await  get_tree().create_timer(retry_delay).timeout
-	lastCommand = "ping fail"
+	lastCommand = "fail".to_utf8_buffer()
 
 
 func get_log_status(stats: String)->String:

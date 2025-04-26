@@ -22,6 +22,7 @@ namespace exordium {
       PING,
       SIZE,
       CHECK_CONNECTION,
+      CUSTOM_MSG,
       COUNT // Add a COUNT to represent the number of commands
     };
 
@@ -29,7 +30,7 @@ namespace exordium {
     return static_cast<std::size_t>(key);
   }
 
-  static std::array<std::function<boost::asio::awaitable<std::string>()>, KEYS(COUNT)> command;
+  static std::array<std::function<boost::asio::awaitable<std::string>(std::string_view)>, KEYS(COUNT)> command;
 
   static boost::asio::awaitable<std::string> ping() {
     co_return "pong\n";
@@ -39,19 +40,32 @@ namespace exordium {
     co_return "some size info\n"; // Replace with actual size logic
   }
 
+  static boost::asio::awaitable<std::string> custom_msg(std::string_view msg) {
+    std::string message = "";
+    if(msg.size() > 0) {
+      message = std::string(msg)+"\n";
+    }
+    else {
+      message = "No custom message provided\n";
+    }
+    co_return message; // Replace with actual custom message logic
+  }
+
   static boost::asio::awaitable<std::string> check_connection() {
     std:: string response = co_await db_store->test_query();
     co_return response;
   }
 
-
-
+  // Example usage of custom_msg
+  
   // Initialize the commands array after the functions are defined
   struct CommandInitializer {
     CommandInitializer() {
-      command[KEYS(PING)] = ping;
-      command[KEYS(SIZE)] = size_func;
-      command[KEYS(CHECK_CONNECTION)] = check_connection;
+      command[KEYS(PING)] = [](std::string_view) { return ping(); };
+      command[KEYS(SIZE)] = [](std::string_view) { return size_func(); };
+      command[KEYS(CHECK_CONNECTION)] = [](std::string_view) { return check_connection(); };
+      command[KEYS(CUSTOM_MSG)] = [](std::string_view msg) { return custom_msg(msg);
+      };
     }
   };
 

@@ -17,7 +17,7 @@ boost::asio::awaitable<void> server_handler(boost::asio::ip::udp::socket &socket
   constexpr int BUFFER_SIZE = 1024;
   std::vector<char> data_buffer(BUFFER_SIZE);
   bool running = true;
-  
+
   while (running)
   {
     boost::asio::deadline_timer timer(socket.get_executor());
@@ -28,14 +28,26 @@ boost::asio::awaitable<void> server_handler(boost::asio::ip::udp::socket &socket
       size_t msg_length = co_await socket.async_receive_from(boost::asio::buffer(data_buffer.data(), BUFFER_SIZE), sender_endpoint, boost::asio::use_awaitable);
       std::string_view received_data(data_buffer.data(), msg_length);
       std::string_view command_str;
+      std::string_view command_args;
       size_t delimiter_pos = received_data.find('\n');
 
       if (delimiter_pos == std::string::npos)
       {
-       printf("No delimiter found\n");
-       continue;
+        printf("No delimiter found\n");
+        continue;
       }
-      CMD = std::atoi(data_buffer.data());
+      command_str = received_data.substr(0, delimiter_pos);
+      command_args = std::string_view(received_data.data() + delimiter_pos + 1, msg_length - delimiter_pos - 1);
+      
+      if (delimiter_pos + 1 < msg_length)
+      {
+        command_args = received_data.substr(delimiter_pos + 1, msg_length - delimiter_pos - 1);
+      }
+      else
+      {
+        command_args = std::string_view(); // Empty if no arguments
+      }
+      CMD = std::atoi(command_str.data());
       boost::asio::co_spawn(socket.get_executor(), [&, sender_endpoint, CMD]() mutable -> boost::asio::awaitable<void>
                             {
                 std::string server_data;
@@ -45,21 +57,30 @@ boost::asio::awaitable<void> server_handler(boost::asio::ip::udp::socket &socket
                     switch (static_cast<size_t>(CMD))
                     {
                         case KEYS(PING):
-                            server_data = co_await exordium::command[KEYS(PING)]();
+                            server_data = co_await exordium::command[KEYS(PING)](command_args);
                             break;
                         case KEYS(SIZE):
-                            server_data = co_await exordium::command[KEYS(SIZE)]();
+                            server_data = co_await exordium::command[KEYS(SIZE)](command_args);
                             break;
                         case KEYS(CHECK_CONNECTION):
-                            server_data = co_await exordium::command[KEYS(CHECK_CONNECTION)]();
+                            server_data = co_await exordium::command[KEYS(CHECK_CONNECTION)](command_args);
+                            break;
+                        case KEYS(CUSTOM_MSG):
+                            server_data = co_await exordium::command[KEYS(CUSTOM_MSG)](command_args);
+                            break;
+                        case KEYS(COUNT):
+                            server_data = co_await exordium::command[KEYS(COUNT)](command_args);
                             break;
                         default:
-                            server_data = std::format("Unknown command of size: {} command is: '{}'", msg_length, data_buffer.data());          
+                            std::string_view data_view(data_buffer.data(), msg_length);
+                            server_data = std::format("Unknown command of size: {} command is: {}\n", msg_length, data_buffer.data());          
                             break;
                     }
                     std::printf("About to send response: %s to %s:%d\n", server_data.c_str(), sender_endpoint.address().to_string().c_str(), sender_endpoint.port());
                     co_await socket.async_send_to(boost::asio::buffer(server_data), sender_endpoint, boost::asio::use_awaitable);
                     server_data.clear();
+                    data_buffer.clear();
+                  
                     std::printf("Response sent.\n");
                 } catch (const std::exception& e) {
                     std::fprintf(stderr, "Error processing command: %s\n", e.what());

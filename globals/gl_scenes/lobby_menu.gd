@@ -2,7 +2,6 @@ extends Node
 
 signal webserv_status(loggin: bool)
 signal status_conn
-signal get_log_msg
 
 @onready var t1: Thread = Thread.new()
 @onready var s1: Semaphore = Semaphore.new()
@@ -16,7 +15,8 @@ signal get_log_msg
 @onready var exo: ExoChaCha = ExoChaCha.new()
 
 @onready var conn_check: bool = false
-@onready var log_msg: Array[String] = [""]
+@onready var secret_check = false
+@onready var log_msg: Array[String] = ["", ""]
 @onready var online_color: bool = false
 
 func _ready() -> void:
@@ -84,12 +84,12 @@ func pingServer() -> void:
 	await NET.sendCommands([NET.PING], true)
 	if(!NET.lastCommand.is_empty()):
 		
-		if NET.lastCommand == "pong\n":
+		if NET.lastCommand.get_string_from_utf8() == "pong\n":
 			serverInfo.text = "ONLINE"
 		
 	else:
 		await NET.command_response
-		if NET.lastCommand == "pong\n":
+		if NET.lastCommand.get_string_from_utf8() == "pong\n":
 			serverInfo.text = "ONLINE"
 
 func webServerResponse(result, response_code, headers: PackedStringArray, body) -> bool:
@@ -129,7 +129,7 @@ func _on_button_pressed() -> void:
 	initalizeUserSession(l_user.text, l_password.text)
 	
 	
-func store_secrets(user_or_email: String, hmac_key: PackedByteArray,chacha_key: PackedByteArray, chacha_nonce: PackedByteArray) -> void:
+func store_secrets(user_or_email: String, hmac_key: PackedByteArray,chacha_key: PackedByteArray, chacha_nonce: PackedByteArray, log_msg: Array[String]) -> void:
 	var http_request: HTTPRequest = HTTPRequest.new()
 	add_child(http_request)
 	var url: String = GLOBAL.web_server.host + ":" + str(GLOBAL.web_server.port) + "/secretes?user=%s&hmac-key=%s&chacha-key=%s&chacha-nonce=%s" % [user_or_email, hmac_key.hex_encode(), chacha_key.hex_encode(), chacha_nonce.hex_encode()]
@@ -137,7 +137,7 @@ func store_secrets(user_or_email: String, hmac_key: PackedByteArray,chacha_key: 
 	rgx.compile("Authorization=.+?;")
 	var results := rgx.search(GLOBAL.auth.JWT_cookie)
 	var headers: PackedStringArray = ["Cookie: "+results.get_string(), "Content-Type: application/x-www-form-urlencoded"]
-	http_request.request_completed.connect(func(result, response_code, headers, body: PackedByteArray): print(body.get_string_from_utf8()))
+	http_request.request_completed.connect(func(result, response_code, headers, body: PackedByteArray): log_msg[1] = body.get_string_from_utf8())
 	http_request.request(url, headers, HTTPClient.METHOD_POST)
 	await http_request.request_completed
 		
@@ -155,4 +155,13 @@ func _process(delta: float) -> void:
 			var hmac_key :PackedByteArray = GLOBAL.auth.HMAC_key
 			var chacha_key: PackedByteArray = GLOBAL.auth.CHACHA_token 
 			var chacha_nonce: PackedByteArray = GLOBAL.auth.CHACHA_nonce
-			store_secrets(user_or_email, hmac_key, chacha_key, chacha_nonce)
+			store_secrets(user_or_email, hmac_key, chacha_key, chacha_nonce, log_msg)
+	if(!secret_check && online_color):
+		if !log_msg[1].is_empty():
+			print(log_msg[1])
+			secret_check = true
+			var msg := exo.encrypt_data(GLOBAL.auth.CHACHA_token, GLOBAL.auth.CHACHA_nonce, "exordium")
+			msg.append(0x0A) #appending \n (new line) to the end of the string
+			await NET.sendCustomCommand(msg)
+			
+			
